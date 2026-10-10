@@ -30,7 +30,7 @@ function Landing() {
       <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
         <Brand />
         <div className="flex gap-2">
-          <Button asChild variant="ghost"><Link to="/auth">Login</Link></Button>
+          <Button asChild variant="ghost"><Link to="/auth" search={{}}>Login</Link></Button>
           <Button asChild><Link to="/auth" search={{ mode: "signup" }}>Create account</Link></Button>
         </div>
       </header>
@@ -48,7 +48,7 @@ function Landing() {
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg"><Link to="/resume">Analyze My Resume <ArrowRight className="ml-1 size-4" /></Link></Button>
-            <Button asChild size="lg" variant="outline"><Link to="/jobs">Explore Indian Jobs</Link></Button>
+            <Button asChild size="lg" variant="outline"><Link to="/jobs" search={{}}>Explore Indian Jobs</Link></Button>
           </div>
         </div>
 

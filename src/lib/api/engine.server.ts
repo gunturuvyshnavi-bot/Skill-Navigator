@@ -9,20 +9,29 @@ import { buildRoadmap } from "@/lib/ml/roadmap";
 type DB = SupabaseClient<Database>;
 export const TOP_N = 5;
 
+async function loadMatchingJobs(sb: DB) {
+  const pageSize = 1000;
+  const rows: { id: string; job_title: string; job_description: string; required_skills: string[] }[] = [];
+  for (let offset = 0; ; offset += pageSize) {
+    const { data, error } = await sb.from("jobs")
+      .select("id, job_title, job_description, required_skills")
+      .order("id").range(offset, offset + pageSize - 1);
+    if (error) throw new Error("Could not load jobs.");
+    rows.push(...(data ?? []));
+    if (!data || data.length < pageSize) return rows;
+  }
+}
+
 export async function loadDictionary(sb: DB): Promise<SkillEntry[]> {
   const { data: base, error } = await sb.from("skills").select("name, aliases, category, level");
   if (error) throw new Error("Could not load the skill dictionary.");
-  const { data: jobs } = await sb.from("jobs").select("required_skills").limit(5000);
-  const datasetSkills = (jobs ?? []).flatMap((j) => j.required_skills ?? []);
+  const jobs = await loadMatchingJobs(sb);
+  const datasetSkills = jobs.flatMap((j) => j.required_skills ?? []);
   return mergeDatasetSkills(base ?? [], datasetSkills);
 }
 
 export async function runMatching(sb: DB, userId: string, resumeId: string, resumeText: string, userSkills: string[]) {
-  const { data: jobs, error } = await sb
-    .from("jobs")
-    .select("id, job_title, job_description, required_skills")
-    .limit(5000);
-  if (error) throw new Error("Could not load jobs.");
+  const jobs = await loadMatchingJobs(sb);
   await sb.from("job_recommendations").delete().eq("resume_id", resumeId);
   if (!jobs || jobs.length === 0) return [];
 
