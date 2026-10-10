@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/_authenticated/skill-gap")({
-  validateSearch: (s: Record<string, unknown>) => ({ jobId: typeof s.jobId === "string" ? s.jobId : undefined }),
-  head: () => ({ meta: [{ title: "Your Skill Gap — SkillBridge AI" }, { name: "description", content: "Skills you have, skills you need and your job readiness." }] }),
+  validateSearch: (s: Record<string, unknown>) => ({ ...(typeof s["jobId"] === "string" ? { jobId: s["jobId"] } : {}) }),
+  head: () => ({ meta: [{ title: "Your Skill Gap — SkillBridge AI" }, { name: "description", content: "Skills you have, skills you need and your job readiness." }, { property: "og:title", content: "Your Skill Gap — SkillBridge AI" }, { property: "og:description", content: "Skills you have, skills you need and your job readiness." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: SkillGapPage,
 });
 
@@ -22,7 +22,7 @@ function SkillGapPage() {
   const gen = useServerFn(generateRoadmapForJob);
   const qc = useQueryClient();
   const navigate = useNavigate();
-  const { data, isLoading } = useQuery({ queryKey: ["gap", jobId], queryFn: () => fn({ data: { jobId } }) });
+  const { data, isLoading } = useQuery({ queryKey: ["gap", jobId], queryFn: () => fn({ data: jobId ? { jobId } : {} }) });
 
   if (isLoading) return <Skeleton className="h-80 rounded-2xl" />;
   if (!data) return <EmptyState icon={Target} title="No resume analyzed" body="Upload your resume to see your skill gap." action={<Button asChild><Link to="/resume">Upload resume</Link></Button>} />;

@@ -10,7 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/_authenticated/roadmap")({
-  head: () => ({ meta: [{ title: "Learning Roadmap — SkillBridge AI" }, { name: "description", content: "Your personalized step-by-step learning roadmap." }] }),
+  head: () => ({ meta: [{ title: "Learning Roadmap — SkillBridge AI" }, { name: "description", content: "Your personalized step-by-step learning roadmap." }, { property: "og:title", content: "Learning Roadmap — SkillBridge AI" }, { property: "og:description", content: "Your personalized step-by-step learning roadmap." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: RoadmapPage,
 });
 

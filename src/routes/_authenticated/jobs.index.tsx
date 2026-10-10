@@ -12,8 +12,8 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/_authenticated/jobs/")({
-  validateSearch: (s: Record<string, unknown>) => ({ tab: s.tab === "recommended" ? ("recommended" as const) : undefined }),
-  head: () => ({ meta: [{ title: "Explore Indian Jobs — SkillBridge AI" }, { name: "description", content: "Browse and filter Indian job postings." }] }),
+  validateSearch: (s: Record<string, unknown>) => ({ ...(s['tab'] === "recommended" ? { tab: "recommended" as const } : {}) }),
+  head: () => ({ meta: [{ title: "Explore Indian Jobs — SkillBridge AI" }, { name: "description", content: "Browse and filter Indian job postings." }, { property: "og:title", content: "Explore Indian Jobs — SkillBridge AI" }, { property: "og:description", content: "Browse and filter Indian job postings." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: JobsPage,
 });
 

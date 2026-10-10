@@ -10,11 +10,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: (s: Record<string, unknown>) => ({ mode: s.mode === "signup" ? ("signup" as const) : undefined }),
+  validateSearch: (s: Record<string, unknown>) => ({ ...(s["mode"] === "signup" ? { mode: "signup" as const } : {}) }),
   head: () => ({
     meta: [
       { title: "Login or Sign up — SkillBridge AI" },
-      { name: "description", content: "Sign in to SkillBridge AI to analyze your resume against Indian jobs." },
+      { name: "description", content: "Sign in to SkillBridge AI to analyze your resume against Indian jobs." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" },
       { property: "og:title", content: "Login — SkillBridge AI" },
       { property: "og:description", content: "Sign in or create your SkillBridge AI account." },
     ],
@@ -80,7 +80,7 @@ function AuthPage() {
 
   async function google() {
     const res = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/auth" });
-    if (res.error) return toast.error("Google sign-in failed. Please try again.");
+    if (res.error) { toast.error("Google sign-in failed. Please try again."); return; }
     if (res.redirected) return;
     navigate({ to: "/dashboard" });
   }

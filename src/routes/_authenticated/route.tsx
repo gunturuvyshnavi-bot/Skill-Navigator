@@ -29,7 +29,7 @@ function AppShell() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
-  const name = (user.user_metadata?.full_name as string | undefined) ?? user.email;
+  const name = (user.user_metadata?.["full_name"] as string | undefined) ?? user.email;
 
   async function signOut() {
     await qc.cancelQueries();

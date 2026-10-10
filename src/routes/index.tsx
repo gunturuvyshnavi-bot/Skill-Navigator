@@ -7,7 +7,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "SkillBridge AI — Turn Your Resume Into Your Career Roadmap" },
-      { name: "description", content: "Analyze your resume, discover suitable Indian jobs, identify skill gaps and build a personalized learning path." },
+      { name: "description", content: "Analyze your resume, discover suitable Indian jobs, identify skill gaps and build a personalized learning path." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" },
       { property: "og:title", content: "SkillBridge AI — Indian Resume-Based Job Recommendations" },
       { property: "og:description", content: "Resume → skills → Indian jobs → match score → skill gap → learning roadmap." },
     ],
