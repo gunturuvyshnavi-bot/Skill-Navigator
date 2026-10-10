@@ -23,7 +23,7 @@ function JobsPage() {
   return (
     <>
       <PageHeader title="Explore Indian Jobs" subtitle="Recommendations are calculated from your resume using TF-IDF and skill overlap." />
-      <Tabs value={tab ?? "explore"} onValueChange={(v) => navigate({ search: { tab: v === "recommended" ? "recommended" : undefined } })}>
+      <Tabs value={tab ?? "explore"} onValueChange={(v) => navigate({ search: v === "recommended" ? { tab: "recommended" } : {} })}>
         <TabsList className="mb-5">
           <TabsTrigger value="explore">All jobs</TabsTrigger>
           <TabsTrigger value="recommended">Top 5 for you</TabsTrigger>
