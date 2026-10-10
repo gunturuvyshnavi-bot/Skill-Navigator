@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/_authenticated/jobs/$jobId")({
-  head: () => ({ meta: [{ title: "Job details — SkillBridge AI" }, { name: "description", content: "Job details with your match score and skill gap." }] }),
+  head: () => ({ meta: [{ title: "Job details — SkillBridge AI" }, { name: "description", content: "Job details with your match score and skill gap." }, { property: "og:title", content: "Job details — SkillBridge AI" }, { property: "og:description", content: "Job details with your match score and skill gap." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: JobDetail,
 });
 

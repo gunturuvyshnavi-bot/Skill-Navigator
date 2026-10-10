@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/_authenticated/resume")({
-  head: () => ({ meta: [{ title: "Resume — SkillBridge AI" }, { name: "description", content: "Upload, analyze or delete your resume." }] }),
+  head: () => ({ meta: [{ title: "Resume — SkillBridge AI" }, { name: "description", content: "Upload, analyze or delete your resume." }, { property: "og:title", content: "Resume — SkillBridge AI" }, { property: "og:description", content: "Upload, analyze or delete your resume." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: ResumePage,
 });
 
@@ -199,7 +199,7 @@ function ResumePage() {
             <div className="mt-6">
               <h3 className="font-semibold">Skills detected</h3>
               <div className="mt-3 flex flex-wrap gap-2">
-                {data!.skills.length ? data!.skills.map((s) => <SkillChip key={s} name={s} tone="have" />) : (
+                {data?.skills.length ? data?.skills.map((s) => <SkillChip key={s} name={s} tone="have" />) : (
                   <p className="text-sm text-muted-foreground">No known skills were detected. Make sure your resume lists your technical skills.</p>
                 )}
               </div>

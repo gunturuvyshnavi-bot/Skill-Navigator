@@ -46,6 +46,7 @@ export function cosineSimilarity(a: SparseVector, b: SparseVector): number {
 /** Similarity of one query document against each corpus document. */
 export function rankBySimilarity(query: string, corpus: string[]): number[] {
   const vectors = fitTransform([query, ...corpus]);
-  const q = vectors[0]!;
+  const q = vectors[0];
+  if (!q) return [];
   return vectors.slice(1).map((v) => cosineSimilarity(q, v));
 }

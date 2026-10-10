@@ -7,7 +7,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "SkillBridge AI — Turn Your Resume Into Your Career Roadmap" },
-      { name: "description", content: "Analyze your resume, discover suitable Indian jobs, identify skill gaps and build a personalized learning path." },
+      { name: "description", content: "Analyze your resume, discover suitable Indian jobs, identify skill gaps and build a personalized learning path." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" },
       { property: "og:title", content: "SkillBridge AI — Indian Resume-Based Job Recommendations" },
       { property: "og:description", content: "Resume → skills → Indian jobs → match score → skill gap → learning roadmap." },
     ],
@@ -30,7 +30,7 @@ function Landing() {
       <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
         <Brand />
         <div className="flex gap-2">
-          <Button asChild variant="ghost"><Link to="/auth">Login</Link></Button>
+          <Button asChild variant="ghost"><Link to="/auth" search={{}}>Login</Link></Button>
           <Button asChild><Link to="/auth" search={{ mode: "signup" }}>Create account</Link></Button>
         </div>
       </header>
@@ -48,7 +48,7 @@ function Landing() {
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg"><Link to="/resume">Analyze My Resume <ArrowRight className="ml-1 size-4" /></Link></Button>
-            <Button asChild size="lg" variant="outline"><Link to="/jobs">Explore Indian Jobs</Link></Button>
+            <Button asChild size="lg" variant="outline"><Link to="/jobs" search={{}}>Explore Indian Jobs</Link></Button>
           </div>
         </div>
 

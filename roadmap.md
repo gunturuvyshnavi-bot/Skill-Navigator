@@ -1,10 +1,12 @@
 # SkillBridge AI roadmap
 
-- [ ] Schema, auth (email + Google), storage
-- [ ] Resume upload with type/size validation, real progress, success/error states
-- [ ] Resume delete, PDF/DOCX extraction, skill extraction
-- [ ] TF-IDF + skill overlap matching, skill gap, readiness
-- [ ] Roadmap, learning resources, progress
-- [ ] Dashboard, jobs explore/details, skill gap, roadmap pages
-- [ ] Tests for scoring rules
-- [ ] Dataset mapping — BLOCKED: waiting on Indian Job Market Dataset CSV
+- [x] Schema, auth (email + Google), storage
+- [x] Resume upload with type/size validation, real progress, success/error states
+- [x] Resume delete, PDF/DOCX extraction, skill extraction
+- [x] TF-IDF + skill overlap matching, skill gap, readiness
+- [x] Roadmap, learning resources, progress
+- [x] Dashboard, jobs explore/details, skill gap, roadmap pages
+- [x] Tests for scoring rules
+- [x] Map and import jobs_dataset_verified.csv without inventing missing fields
+- [x] Fix website errors and verify resume-to-recommendation flow
+- [x] Apply black theme throughout the website

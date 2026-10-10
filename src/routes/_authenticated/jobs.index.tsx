@@ -12,8 +12,8 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/_authenticated/jobs/")({
-  validateSearch: (s: Record<string, unknown>) => ({ tab: s.tab === "recommended" ? ("recommended" as const) : undefined }),
-  head: () => ({ meta: [{ title: "Explore Indian Jobs — SkillBridge AI" }, { name: "description", content: "Browse and filter Indian job postings." }] }),
+  validateSearch: (s: Record<string, unknown>) => ({ ...(s['tab'] === "recommended" ? { tab: "recommended" as const } : {}) }),
+  head: () => ({ meta: [{ title: "Explore Indian Jobs — SkillBridge AI" }, { name: "description", content: "Browse and filter Indian job postings." }, { property: "og:title", content: "Explore Indian Jobs — SkillBridge AI" }, { property: "og:description", content: "Browse and filter Indian job postings." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: JobsPage,
 });
 
@@ -23,7 +23,7 @@ function JobsPage() {
   return (
     <>
       <PageHeader title="Explore Indian Jobs" subtitle="Recommendations are calculated from your resume using TF-IDF and skill overlap." />
-      <Tabs value={tab ?? "explore"} onValueChange={(v) => navigate({ search: { tab: v === "recommended" ? "recommended" : undefined } })}>
+      <Tabs value={tab ?? "explore"} onValueChange={(v) => navigate({ search: v === "recommended" ? { tab: "recommended" } : {} })}>
         <TabsList className="mb-5">
           <TabsTrigger value="explore">All jobs</TabsTrigger>
           <TabsTrigger value="recommended">Top 5 for you</TabsTrigger>

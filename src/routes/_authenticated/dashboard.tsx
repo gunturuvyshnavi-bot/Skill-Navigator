@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Dashboard — SkillBridge AI" }, { name: "description", content: "Your career readiness at a glance." }] }),
+  head: () => ({ meta: [{ title: "Dashboard — SkillBridge AI" }, { name: "description", content: "Your career readiness at a glance." }, { property: "og:title", content: "Dashboard — SkillBridge AI" }, { property: "og:description", content: "Your career readiness at a glance." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: Dashboard,
 });
 
