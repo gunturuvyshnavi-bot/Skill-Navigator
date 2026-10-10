@@ -7,4 +7,6 @@
 - [ ] Roadmap, learning resources, progress
 - [ ] Dashboard, jobs explore/details, skill gap, roadmap pages
 - [ ] Tests for scoring rules
-- [ ] Dataset mapping — BLOCKED: waiting on Indian Job Market Dataset CSV
+- [ ] Map and import jobs_dataset_verified.csv without inventing missing fields
+- [ ] Fix website errors and verify resume-to-recommendation flow
+- [ ] Apply black theme throughout the website
