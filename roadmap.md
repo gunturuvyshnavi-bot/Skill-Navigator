@@ -10,3 +10,4 @@
 - [x] Map and import jobs_dataset_verified.csv without inventing missing fields
 - [x] Fix website errors and verify resume-to-recommendation flow
 - [x] Apply black theme throughout the website
+- [x] Google sign-in 404s when running locally in VS Code (OAuth proxy only exists on Lovable hosting) — show a clear local-only note
