@@ -78,7 +78,15 @@ function AuthPage() {
     }
   }
 
+  // Google sign-in is brokered by Lovable's hosting layer (/~oauth/*), which only
+  // exists on the Lovable preview/published URL — not on a local `npm run dev`.
+  const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+
   async function google() {
+    if (isLocal) {
+      toast.error("Google sign-in only works on the published app. Use email and password when running locally.");
+      return;
+    }
     const res = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/auth" });
     if (res.error) { toast.error("Google sign-in failed. Please try again."); return; }
     if (res.redirected) return;
