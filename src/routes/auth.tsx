@@ -8,9 +8,11 @@ import { Brand } from "@/components/brand";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { normalizeEmail, passwordProblem } from "@/lib/auth/password";
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: (s: Record<string, unknown>) => ({ ...(s["mode"] === "signup" ? { mode: "signup" as const } : {}) }),
+  validateSearch: (s: Record<string, unknown>): { mode?: "signup" | "forgot" } =>
+    s["mode"] === "signup" || s["mode"] === "forgot" ? { mode: s["mode"] } : {},
   head: () => ({
     meta: [
       { title: "Login or Sign up — SkillBridge AI" },
@@ -25,20 +27,24 @@ export const Route = createFileRoute("/auth")({
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function friendly(msg: string) {
-  if (/invalid login/i.test(msg)) return "Wrong email or password.";
+  if (/invalid login/i.test(msg)) return "Wrong email or password. If you usually use Google, or forgot your password, use \"Forgot password?\" to set one.";
   if (/not confirmed/i.test(msg)) return "Please confirm your email first — check your inbox.";
   if (/already registered/i.test(msg)) return "An account with this email already exists.";
+  if (/rate limit|too many/i.test(msg)) return "Too many attempts. Please wait a few minutes and try again.";
   return msg;
 }
+
+type Mode = "login" | "signup" | "forgot";
 
 function AuthPage() {
   const search = Route.useSearch();
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"login" | "signup">(search.mode === "signup" ? "signup" : "login");
+  const [mode, setModeRaw] = useState<Mode>(search.mode ?? "login");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [sent, setSent] = useState(false);
+  const [sent, setSent] = useState<null | "signup" | "reset">(null);
   const [f, setF] = useState({ name: "", email: "", password: "", confirm: "" });
+  const setMode = (m: Mode) => { setError(null); setModeRaw(m); };
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -49,27 +55,34 @@ function AuthPage() {
   async function submit(e: FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!EMAIL_RE.test(f.email)) return setError("Please enter a valid email address.");
+    const email = normalizeEmail(f.email);
+    if (!EMAIL_RE.test(email)) return setError("Please enter a valid email address.");
     if (mode === "signup") {
       if (!f.name.trim()) return setError("Please enter your full name.");
-      if (f.password.length < 8 || !/\d/.test(f.password) || !/[a-z]/i.test(f.password))
-        return setError("Password must be at least 8 characters with letters and numbers.");
-      if (f.password !== f.confirm) return setError("Passwords don't match.");
+      const problem = passwordProblem(f.password, f.confirm);
+      if (problem) return setError(problem);
     }
+    if (mode === "login" && !f.password) return setError("Please enter your password.");
     setBusy(true);
     try {
       if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({ email: f.email, password: f.password });
+        const { error } = await supabase.auth.signInWithPassword({ email, password: f.password });
         if (error) throw error;
         navigate({ to: "/dashboard" });
-      } else {
+      } else if (mode === "signup") {
         const { error } = await supabase.auth.signUp({
-          email: f.email,
+          email,
           password: f.password,
-          options: { emailRedirectTo: window.location.origin + "/dashboard", data: { full_name: f.name.trim() } },
+          options: { emailRedirectTo: window.location.origin + "/auth", data: { full_name: f.name.trim() } },
         });
         if (error) throw error;
-        setSent(true);
+        setSent("signup");
+      } else {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin + "/reset-password",
+        });
+        if (error) throw error;
+        setSent("reset");
       }
     } catch (err) {
       setError(friendly(err instanceof Error ? err.message : "Something went wrong."));
@@ -101,9 +114,29 @@ function AuthPage() {
           {sent ? (
             <div className="text-center">
               <h1 className="text-2xl font-bold">Check your email</h1>
-              <p className="mt-2 text-sm text-muted-foreground">We sent a confirmation link to <b>{f.email}</b>. Click it to activate your account.</p>
-              <Button className="mt-6" variant="outline" onClick={() => { setSent(false); setMode("login"); }}>Back to login</Button>
+              {sent === "signup" ? (
+                <p className="mt-2 text-sm text-muted-foreground">We sent a confirmation link to <b>{f.email.trim()}</b>. Click it to activate your account.</p>
+              ) : (
+                <p className="mt-2 text-sm text-muted-foreground">If an account exists for <b>{f.email.trim()}</b>, we sent a password reset link. Open it on this device to choose a new password. Check your spam folder if it doesn't arrive within a few minutes.</p>
+              )}
+              <Button className="mt-6" variant="outline" onClick={() => { setSent(null); setMode("login"); }}>Back to login</Button>
             </div>
+          ) : mode === "forgot" ? (
+            <>
+              <h1 className="text-center text-2xl font-bold">Forgot Password</h1>
+              <p className="mt-2 text-center text-sm text-muted-foreground">Enter your account email and we'll send you a link to set a new password.</p>
+              <form onSubmit={submit} className="mt-6 space-y-4" noValidate>
+                <Field label="Email" id="email" type="email" value={f.email} onChange={(v) => setF({ ...f, email: v })} />
+                {error && <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>}
+                <Button type="submit" className="w-full" disabled={busy}>
+                  {busy && <Loader2 className="mr-2 size-4 animate-spin" />}Send Reset Link
+                </Button>
+              </form>
+              <p className="mt-5 text-center text-sm text-muted-foreground">
+                Remembered it?{" "}
+                <button className="font-semibold text-primary hover:underline" onClick={() => setMode("login")}>Back to login</button>
+              </p>
+            </>
           ) : (
             <>
               <h1 className="text-center text-2xl font-bold">{mode === "login" ? "Welcome Back" : "Create Account"}</h1>
@@ -123,6 +156,13 @@ function AuthPage() {
                 )}
                 <Field label="Email" id="email" type="email" value={f.email} onChange={(v) => setF({ ...f, email: v })} />
                 <Field label="Password" id="password" type="password" value={f.password} onChange={(v) => setF({ ...f, password: v })} />
+                {mode === "login" && (
+                  <div className="-mt-2 text-right">
+                    <button type="button" className="text-xs font-medium text-primary hover:underline" onClick={() => setMode("forgot")}>
+                      Forgot password?
+                    </button>
+                  </div>
+                )}
                 {mode === "signup" && (
                   <Field label="Confirm Password" id="confirm" type="password" value={f.confirm} onChange={(v) => setF({ ...f, confirm: v })} />
                 )}
@@ -134,7 +174,7 @@ function AuthPage() {
               </form>
               <p className="mt-5 text-center text-sm text-muted-foreground">
                 {mode === "login" ? "Don't have an account? " : "Already have an account? "}
-                <button className="font-semibold text-primary hover:underline" onClick={() => { setError(null); setMode(mode === "login" ? "signup" : "login"); }}>
+                <button className="font-semibold text-primary hover:underline" onClick={() => setMode(mode === "login" ? "signup" : "login")}>
                   {mode === "login" ? "Create Account" : "Login"}
                 </button>
               </p>
